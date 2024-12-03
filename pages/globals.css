@@ -9,22 +9,27 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  padding: 20px;
 }
 
 .title {
-  grid-column: 3 / span 1;
   text-align: center;
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
+  margin-top: 60px;
+  /* Ensure title doesn't intersect with logo */
 }
 
-.subtitle {
-  grid-column: 3 / span 1;
-  text-align: center;
-  font-size: 14px;
+.info-box {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
   margin-bottom: 20px;
+  max-width: 800px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
@@ -39,7 +44,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 80%;
+  width: 100%;
   max-width: 1200px;
 }
 
@@ -48,14 +53,15 @@ body {
   align-items: center;
   width: 100%;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .grid-row-text {
   display: flex;
   align-items: center;
-  width: 20%;
-  text-align: right;
-  margin-right: 20px;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
   position: relative;
 }
 
@@ -64,45 +70,11 @@ body {
   cursor: pointer;
 }
 
-.grid-row-text .tooltip {
-  visibility: hidden;
-  width: 200px;
-  background-color: #555;
-  color: #fff;
-  text-align: center;
-  border-radius: 5px;
-  padding: 5px;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  /* Position the tooltip above the text */
-  left: 50%;
-  margin-left: -100px;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.grid-row-text .tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #555 transparent transparent transparent;
-}
-
-.grid-row-text:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  width: 80%;
+  width: 100%;
   /* Make the grid scale with the browser window */
 }
 
@@ -156,4 +128,29 @@ body {
   text-align: center;
   font-weight: bold;
   margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-row-text {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .logo {
+    width: 30%;
+    /* Adjust logo size for smaller screens */
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .info-box {
+    font-size: 14px;
+  }
 }
