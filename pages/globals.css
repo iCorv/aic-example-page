@@ -28,7 +28,8 @@ body {
   padding: 20px;
   margin-bottom: 20px;
   max-width: 800px;
-  text-align: center;
+  text-align: justify;
+  /* Justify the text in the information field */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -107,7 +108,9 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 25px;
+  /* Set the play icon width to 25px */
   height: 25px;
+  /* Set the play icon height to 25px */
   background-image: url('/play-button-arrowhead.png');
   background-size: cover;
   display: flex;

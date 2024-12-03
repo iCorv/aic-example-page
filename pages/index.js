@@ -40,7 +40,7 @@ export default function Home() {
             <img src="/logo.png" alt="Logo" className="logo" />
             <h1 className="title">Subtractive vs. Generative</h1>
             <div className="info-box">
-                These are spectrograms, time-frequency representations of audio signals. You can see how different artefacts affect the voice recording. Distortion puts too much energy in some frequencies (+ codec compression creates these small holes), reverb makes everything blurry, and bandlimiting means information is completely lost.
+                These spectrograms show the time-frequency representations of audio signals, highlighting how different artifacts impact voice recordings. Distortion adds excessive energy to certain frequencies (with codecs often causing small gaps), reverb blurs the signal, and bandlimiting results in a complete loss of information in specific frequency ranges. While current subtractive AI models have limited capabilities in addressing these issues, our approach goes further: we reconstruct the missing information to deliver a studio-quality voice recording.
             </div>
             <div className="grid-container">
                 {images.map((row, rowIndex) => (
