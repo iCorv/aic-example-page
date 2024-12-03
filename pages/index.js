@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
 const images = [
-    { prefix: 'distortion', count: 3, text: 'Distortion and Clipping', tooltip: 'Subtractive: Attempts to filter out distortion by reducing unwanted frequencies. Generative: Learns to reconstruct clean speech, replacing distorted components.' },
-    { prefix: 'reverb', count: 3, text: 'Reverb and Room', tooltip: 'Subtractive: Minimizes reverb by suppressing echo-like reflections. Generative: Reconstructs how direct speech sounds like, removing the reverberated effects.' },
-    { prefix: 'bandwidth_8kHz', count: 3, text: 'Strong Bandlimited Signal', tooltip: 'Subtractive: Reduces noise but struggles to recover lost information. Generative: Generates a clean, enriched version, restoring lost details but preserving the speaker identity.' },
-    { prefix: 'bandwidth_4kHz', count: 3, text: 'Extreme Bandlimited Signal', tooltip: 'Subtractive: Enhances clarity by filtering noise from the limited band. Generative: Reconstructs all frequency content, giving it a more natural sound.' },
+    { prefix: 'distortion', count: 3, text: 'Distortion and Clipping', tooltip: 'Distortion and clipping occur when the audio signal is too strong, causing it to be cut off abruptly. Subtractive AI can reduce the distortion, while generative AI can recreate the original signal.' },
+    { prefix: 'reverb', count: 3, text: 'Reverb and Room', tooltip: 'Reverb and room effects simulate the sound reflections in a space. Subtractive AI can reduce excessive reverb, while generative AI can recreate the original dry signal.' },
+    { prefix: 'bandwidth_8kHz', count: 3, text: 'Strong Bandlimited Signal', tooltip: 'A strong bandlimited signal has reduced frequency content. Subtractive AI can enhance the remaining frequencies, while generative AI can recreate the missing frequencies.' },
+    { prefix: 'bandwidth_4kHz', count: 3, text: 'Extreme Bandlimited Signal', tooltip: 'An extreme bandlimited signal has very limited frequency content. Subtractive AI can enhance the remaining frequencies, while generative AI can recreate the missing frequencies.' },
 ];
 
 const columnTexts = [
@@ -40,6 +40,7 @@ export default function Home() {
             <img src="/logo.png" alt="Logo" className="logo" />
             <div className="grid-container">
                 <h1 className="title">Subtractive vs. Generative</h1>
+                <h2 className="subtitle">These are spectrograms, time-frequency representations of audio signals. You can see how different artefacts affect the voice recording. Distortion puts too much energy in some frequencies (+ codec results in these small holes), reverb makes everything blurry and bandlimiting means information is completely lost above a threshold.</h2>
                 {images.map((row, rowIndex) => (
                     <div className="grid-row" key={rowIndex}>
                         <div className="grid-row-text">
