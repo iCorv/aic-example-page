@@ -207,6 +207,28 @@ export default function Home() {
     const [activeTab, setActiveTab] = useState('eleven');
     const rows = activeTab === 'dolby' ? DOLBY_ROWS : ELEVENLABS_ROWS;
 
+    // Initialize active tab from hash (/#eleven or /#dolby) and keep in sync
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const applyHash = () => {
+            const hash = (window.location.hash || '').replace('#', '');
+            if (hash === 'dolby' || hash === 'eleven') {
+                setActiveTab(hash);
+            }
+        };
+        applyHash();
+        window.addEventListener('hashchange', applyHash);
+        return () => window.removeEventListener('hashchange', applyHash);
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const hash = (window.location.hash || '').replace('#', '');
+        if (hash !== activeTab) {
+            history.replaceState(null, '', `#${activeTab}`);
+        }
+    }, [activeTab]);
+
     return (
         <div className="container">
             <img src="/ai-coustics-logo-black.svg" alt="Logo" className="logo" />
