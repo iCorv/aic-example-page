@@ -1,7 +1,8 @@
 body {
-  background-color: #FED7D4;
+  background: radial-gradient(100% 60% at 50% 0%, #FFD6DA 0%, #F8E4E6 35%, #FFFFFF 100%);
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  color: #111827;
 }
 
 .container {
@@ -21,6 +22,34 @@ body {
   /* Ensure title doesn't intersect with logo */
 }
 
+/* hero */
+.hero {
+  text-align: center;
+  margin-top: 80px;
+  margin-bottom: 24px;
+}
+
+.hero-title {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px 0;
+}
+
+.hero-subtitle {
+  color: #374151;
+  margin: 0 0 16px 0;
+}
+
+.cta {
+  display: inline-block;
+  background: #111827;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 9999px;
+  text-decoration: none;
+}
+
 .info-box {
   background-color: #fff;
   border: 1px solid #ccc;
@@ -37,7 +66,7 @@ body {
   position: absolute;
   top: 10px;
   left: 10px;
-  width: 20%;
+  width: 10%;
   /* Reduce the size of the logo by 60% */
 }
 
@@ -64,6 +93,7 @@ body {
   text-align: center;
   margin-bottom: 10px;
   position: relative;
+  z-index: 1;
 }
 
 .grid-row-text .info-icon {
@@ -79,8 +109,100 @@ body {
   /* Make the grid scale with the browser window */
 }
 
+/* tabs */
+.tabs {
+  display: inline-flex;
+  background: #F3F4F6;
+  padding: 6px;
+  border-radius: 9999px;
+  margin-bottom: 24px;
+}
+
+.tab {
+  border: 0;
+  background: transparent;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  cursor: pointer;
+  color: #111827;
+}
+
+.tab.active {
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
 .image-container {
   position: relative;
+  cursor: default;
+}
+
+.player {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.spectrogram {
+  width: 100%;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  display: block;
+}
+
+.waveform {
+  height: 70px;
+  position: relative;
+  display: block;
+}
+
+/* Ensure canvases created by plugins are contained */
+.spectrogram canvas,
+.waveform canvas,
+.waveform div,
+.spectrogram div {
+  max-width: 100% !important;
+  display: block;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.controls.center {
+  justify-content: center;
+}
+
+.ctrl-btn {
+  background: #111827;
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.ctrl-range {
+  flex: 1;
+}
+
+.play-btn {
+  margin-top: 8px;
+  background: #111827;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 10px;
   cursor: pointer;
 }
 

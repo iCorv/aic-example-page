@@ -1,73 +1,229 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-const images = [
-    { prefix: 'distortion', count: 3, text: 'Distortion and Clipping' },
-    { prefix: 'reverb', count: 3, text: 'Reverb and Room' },
-    { prefix: 'bandwidth_8kHz', count: 3, text: 'Strong Bandlimited Signal' },
-    { prefix: 'bandwidth_4kHz', count: 3, text: 'Extreme Bandlimited Signal' },
-];
-
-const columnTexts = [
+// Column labels are consistent across tabs
+const COLUMNS = [
     'Original',
-    'Subtractive (Dolby.io)',
-    'Generative (ai|coustics)',
+    'Competitor',
+    'ai-coustics',
 ];
 
-export default function Home() {
-    const audioRefs = useRef([]);
-    const [clickedIndex, setClickedIndex] = useState(null);
+// Dataset for Dolby: each row maps to three files following the existing naming convention
+const DOLBY_ROWS = [
+    {
+        text: 'Distortion and Clipping',
+        files: [
+            '/dolby/distortion_1.wav',
+            '/dolby/distortion_2.wav',
+            '/dolby/distortion_3.wav',
+        ],
+        competitorLabel: 'dolby.io'
+    },
+    {
+        text: 'Reverb and Room',
+        files: [
+            '/dolby/reverb_1.wav',
+            '/dolby/reverb_2.wav',
+            '/dolby/reverb_3.wav',
+        ],
+        competitorLabel: 'dolby.io'
+    },
+    {
+        text: 'Strong Bandlimited Signal',
+        files: [
+            '/dolby/bandwidth_8kHz_1.wav',
+            '/dolby/bandwidth_8kHz_2.wav',
+            '/dolby/bandwidth_8kHz_3.wav',
+        ],
+        competitorLabel: 'dolby.io'
+    },
+    {
+        text: 'Extreme Bandlimited Signal',
+        files: [
+            '/dolby/bandwidth_4kHz_1.wav',
+            '/dolby/bandwidth_4kHz_2.wav',
+            '/dolby/bandwidth_4kHz_3.wav',
+        ],
+        competitorLabel: 'dolby.io'
+    },
+];
+
+// Dataset for ElevenLabs: map each scenario to Original / ElevenLabs / ai‑coustics
+const ELEVENLABS_ROWS = [
+    {
+        text: 'Concatenated dialog #1',
+        files: [
+            '/elevenlabs/original/A00_leo_and_butch_concatenated_mono_16bit [2025-10-14 162641].mp3',
+            '/elevenlabs/elevenlabs/A00_leo_and_butch_concatenated - isolated_mono_16bit [2025-10-14 162641].mp3',
+            '/elevenlabs/ai-coustics/A00_leo_and_butch_concatenated_LARK_V2_100p_mono_16bit [2025-10-14 162641].mp3',
+        ],
+        competitorLabel: 'ElevenLabs'
+    },
+    {
+        text: 'Concatenated dialog #2',
+        files: [
+            '/elevenlabs/original/A00_leo_and_butch_concatenated_mono_16bit [2025-10-14 163036].mp3',
+            '/elevenlabs/elevenlabs/A00_leo_and_butch_concatenated - isolated_mono_16bit [2025-10-14 163036].mp3',
+            '/elevenlabs/ai-coustics/A00_leo_and_butch_concatenated_LARK_V2_100p_mono_16bit [2025-10-14 163036].mp3',
+        ],
+        competitorLabel: 'ElevenLabs'
+    },
+    {
+        text: 'Concatenated dialog #3',
+        files: [
+            '/elevenlabs/original/A00_leo_and_butch_concatenated_mono_16bit [2025-10-14 163405].mp3',
+            '/elevenlabs/elevenlabs/A00_leo_and_butch_concatenated - isolated_mono_16bit [2025-10-14 163405].mp3',
+            '/elevenlabs/ai-coustics/A00_leo_and_butch_concatenated_LARK_V2_100p_mono_16bit [2025-10-14 163405].mp3',
+        ],
+        competitorLabel: 'ElevenLabs'
+    },
+    {
+        text: 'White noise',
+        files: [
+            '/elevenlabs/original/listen_only_mix_white_noise [2025-10-14 164402].mp3',
+            '/elevenlabs/elevenlabs/listen_only_ElevenLabs_AudioIsolation_white_noise [2025-10-14 164402].mp3',
+            '/elevenlabs/ai-coustics/listen_only_LARK_2_white_noise [2025-10-14 164402].mp3',
+        ],
+        competitorLabel: 'ElevenLabs'
+    },
+    {
+        text: 'Tutor voice',
+        files: [
+            '/elevenlabs/original/listen_only_mix_tutor [2025-10-14 164412].mp3',
+            '/elevenlabs/elevenlabs/listen_only_ElevenLabs_AudioIsolation_tutor [2025-10-14 164412].mp3',
+            '/elevenlabs/ai-coustics/listen_only_LARK_2_tutor [2025-10-14 164412].mp3',
+        ],
+        competitorLabel: 'ElevenLabs'
+    },
+    {
+        text: 'Traffic lofi (A20)',
+        files: [
+            '/elevenlabs/original/leo_butch_listen_only_mix_A20_m_traffic_lofi [2025-10-14 164644].mp3',
+            '/elevenlabs/elevenlabs/leo_butch_listen_only_ElevenLabs_AudioIsolation_A20_m_traffic_lofi [2025-10-14 164644].mp3',
+            '/elevenlabs/ai-coustics/leo_butch_listen_only_LARK_2_A20_m_traffic_lofi [2025-10-14 164644].mp3',
+        ],
+        competitorLabel: 'ElevenLabs'
+    },
+    {
+        text: 'Rustle with reverb (A40)',
+        files: [
+            '/elevenlabs/original/leo_butch_listen_only_mix_A40_f_rustle_rvb [2025-10-14 164504].mp3',
+            '/elevenlabs/elevenlabs/leo_butch_listen_only_ElevenLabs_AudioIsolation_A40_f_rustle_rvb [2025-10-14 164504].mp3',
+            '/elevenlabs/ai-coustics/leo_butch_listen_only_LARK_2_A40_f_rustle_rvb [2025-10-14 164504].mp3',
+        ],
+        competitorLabel: 'ElevenLabs'
+    },
+    {
+        text: 'Studio misuse (A60)',
+        files: [
+            '/elevenlabs/original/leo_butch_listen_only_mix_A60_m_studio_wrong_use_1 [2025-10-14 164558].mp3',
+            '/elevenlabs/elevenlabs/leo_butch_listen_only_ElevenLabs_AudioIsolation_A60_m_studio_wrong_use_1 [2025-10-14 164558].mp3',
+            '/elevenlabs/ai-coustics/leo_butch_listen_only_LARK_2_A60_m_studio_wrong_use_1 [2025-10-14 164558].mp3',
+        ],
+        competitorLabel: 'ElevenLabs'
+    },
+];
+
+function WavePlayer({ src, label }) {
+    const spectroRef = useRef(null);
+    const waveformRef = useRef(null);
+    const wavesurferRef = useRef(null);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     useEffect(() => {
-        audioRefs.current = audioRefs.current.slice(0, images.length * 3);
-    }, []);
+        let destroyed = false;
+        let ws;
+        (async () => {
+            const WS = (await import('wavesurfer.js')).default;
+            const Spectrogram = (await import('wavesurfer.js/dist/plugins/spectrogram.esm.js')).default;
+            if (destroyed) return;
+            ws = WS.create({
+                container: waveformRef.current,
+                height: 60,
+                barWidth: 2,
+                barGap: 1,
+                waveColor: '#9CA3AF',
+                progressColor: '#111827',
+                cursorColor: 'transparent',
+                url: src,
+                sampleRate: 32000,
+                plugins: [
+                    Spectrogram.create({
+                        container: spectroRef.current,
+                        labels: false,
+                        height: 128,
+                        frequencyMax: 16000,
+                        scale: 'mel',
+                    }),
+                ],
+            });
+            ws.on('play', () => setIsPlaying(true));
+            ws.on('pause', () => setIsPlaying(false));
+            wavesurferRef.current = ws;
+        })();
+        return () => {
+            destroyed = true;
+            try {
+                wavesurferRef.current && wavesurferRef.current.destroy();
+            } catch { }
+            wavesurferRef.current = null;
+        };
+    }, [src]);
 
-    const handleImageClick = (index) => {
-        if (clickedIndex === index) {
-            audioRefs.current[index].pause();
-            setClickedIndex(null);
-        } else {
-            if (clickedIndex !== null) {
-                audioRefs.current[clickedIndex].pause();
-            }
-            audioRefs.current[index].currentTime = 0;
-            audioRefs.current[index].play();
-            setClickedIndex(index);
-        }
+    const playPause = () => {
+        const ws = wavesurferRef.current;
+        if (!ws) return;
+        if (ws.isPlaying()) ws.pause(); else ws.play();
     };
 
     return (
-        <div className="container">
-            <img src="/logo.png" alt="Logo" className="logo" />
-            <h1 className="title">Subtractive vs. Generative</h1>
-            <div className="info-box">
-                These spectrograms show the time-frequency representations of audio signals, highlighting how different artifacts impact voice recordings. Distortion adds excessive energy to certain frequencies (with codecs often causing small gaps), reverb blurs the signal, and bandlimiting results in a complete loss of information in specific frequency ranges. While current subtractive AI models have limited capabilities in addressing these issues, our approach goes further: we reconstruct the missing information to deliver a studio-quality voice recording.
+        <div className="player">
+            <div ref={waveformRef} className="waveform"></div>
+            <div ref={spectroRef} className="spectrogram"></div>
+            <div className="controls center">
+                <button className="ctrl-btn" onClick={playPause} aria-label="Play or pause">{isPlaying ? '⏸' : '▶︎'}</button>
             </div>
-            <div className="grid-container">
-                {images.map((row, rowIndex) => (
-                    <div className="grid-row" key={rowIndex}>
-                        <div className="grid-row-text">
-                            {row.text}
-                        </div>
-                        <div className="grid">
-                            {Array.from({ length: row.count }).map((_, colIndex) => {
-                                const index = rowIndex * 3 + colIndex;
-                                const src = `/${row.prefix}_${colIndex + 1}.png`;
-                                const audioSrc = `/${row.prefix}_${colIndex + 1}.wav`;
-                                return (
-                                    <div key={index} className="image-container" onClick={() => handleImageClick(index)}>
-                                        <img
-                                            src={src}
-                                            alt={`${row.prefix}${colIndex + 1}`}
-                                            className={`image ${clickedIndex === index ? 'clicked' : ''}`}
-                                        />
-                                        <div className={`play-symbol ${clickedIndex === index ? 'hidden' : ''}`}></div>
-                                        <audio ref={(el) => (audioRefs.current[index] = el)} src={audioSrc} />
-                                        <div className="column-text">{columnTexts[colIndex]}</div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+            <div className="column-text">{label}</div>
+        </div>
+    );
+}
+
+function Row({ text, files, competitorLabel }) {
+    const labels = useMemo(() => [COLUMNS[0], competitorLabel || COLUMNS[1], COLUMNS[2]], [competitorLabel]);
+    return (
+        <div className="grid-row">
+            <div className="grid-row-text">{text}</div>
+            <div className="grid">
+                {files.map((src, i) => (
+                    <div className="image-container" key={i}>
+                        <WavePlayer src={src} label={labels[i]} />
                     </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+export default function Home() {
+    const [activeTab, setActiveTab] = useState('eleven');
+    const rows = activeTab === 'dolby' ? DOLBY_ROWS : ELEVENLABS_ROWS;
+
+    return (
+        <div className="container">
+            <img src="/ai-coustics-logo-black.svg" alt="Logo" className="logo" />
+            <div className="hero">
+                <h1 className="hero-title">Voice AI that stands out from the noise</h1>
+                <p className="hero-subtitle">Real-time, AI-powered speech enhancement solutions. Ready to scale.</p>
+                <a className="cta" href="https://developers.ai-coustics.io/signup?utm_source=internal&utm_medium=menu">Get API keys</a>
+            </div>
+
+            <div className="tabs">
+                <button className={`tab ${activeTab === 'eleven' ? 'active' : ''}`} onClick={() => setActiveTab('eleven')}>ElevenLabs comparison</button>
+                <button className={`tab ${activeTab === 'dolby' ? 'active' : ''}`} onClick={() => setActiveTab('dolby')}>Dolby comparison</button>
+            </div>
+
+            <div className="grid-container">
+                {rows.map((row, idx) => (
+                    <Row key={idx} text={row.text} files={row.files} competitorLabel={row.competitorLabel} />
                 ))}
             </div>
         </div>
