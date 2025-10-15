@@ -50,7 +50,7 @@ const DOLBY_ROWS = [
 // Dataset for ElevenLabs: map each scenario to Original / ElevenLabs / ai‑coustics
 const ELEVENLABS_ROWS = [
     {
-        text: 'Concatenated dialog #1',
+        text: 'Podcast in small room',
         files: [
             '/elevenlabs/original/A00_leo_and_butch_concatenated_mono_16bit [2025-10-14 162641].mp3',
             '/elevenlabs/elevenlabs/A00_leo_and_butch_concatenated - isolated_mono_16bit [2025-10-14 162641].mp3',
@@ -59,7 +59,7 @@ const ELEVENLABS_ROWS = [
         competitorLabel: 'ElevenLabs'
     },
     {
-        text: 'Concatenated dialog #2',
+        text: 'Phone recording in loud environment',
         files: [
             '/elevenlabs/original/A00_leo_and_butch_concatenated_mono_16bit [2025-10-14 163036].mp3',
             '/elevenlabs/elevenlabs/A00_leo_and_butch_concatenated - isolated_mono_16bit [2025-10-14 163036].mp3',
@@ -68,7 +68,7 @@ const ELEVENLABS_ROWS = [
         competitorLabel: 'ElevenLabs'
     },
     {
-        text: 'Concatenated dialog #3',
+        text: 'Content in reverberant room',
         files: [
             '/elevenlabs/original/A00_leo_and_butch_concatenated_mono_16bit [2025-10-14 163405].mp3',
             '/elevenlabs/elevenlabs/A00_leo_and_butch_concatenated - isolated_mono_16bit [2025-10-14 163405].mp3',
@@ -77,16 +77,7 @@ const ELEVENLABS_ROWS = [
         competitorLabel: 'ElevenLabs'
     },
     {
-        text: 'White noise',
-        files: [
-            '/elevenlabs/original/listen_only_mix_white_noise [2025-10-14 164402].mp3',
-            '/elevenlabs/elevenlabs/listen_only_ElevenLabs_AudioIsolation_white_noise [2025-10-14 164402].mp3',
-            '/elevenlabs/ai-coustics/listen_only_LARK_2_white_noise [2025-10-14 164402].mp3',
-        ],
-        competitorLabel: 'ElevenLabs'
-    },
-    {
-        text: 'Tutor voice',
+        text: 'Distorted and clipped lecture',
         files: [
             '/elevenlabs/original/listen_only_mix_tutor [2025-10-14 164412].mp3',
             '/elevenlabs/elevenlabs/listen_only_ElevenLabs_AudioIsolation_tutor [2025-10-14 164412].mp3',
@@ -95,7 +86,7 @@ const ELEVENLABS_ROWS = [
         competitorLabel: 'ElevenLabs'
     },
     {
-        text: 'Traffic lofi (A20)',
+        text: 'Traffic lofi',
         files: [
             '/elevenlabs/original/leo_butch_listen_only_mix_A20_m_traffic_lofi [2025-10-14 164644].mp3',
             '/elevenlabs/elevenlabs/leo_butch_listen_only_ElevenLabs_AudioIsolation_A20_m_traffic_lofi [2025-10-14 164644].mp3',
@@ -104,7 +95,7 @@ const ELEVENLABS_ROWS = [
         competitorLabel: 'ElevenLabs'
     },
     {
-        text: 'Rustle with reverb (A40)',
+        text: 'Rustle with reverb',
         files: [
             '/elevenlabs/original/leo_butch_listen_only_mix_A40_f_rustle_rvb [2025-10-14 164504].mp3',
             '/elevenlabs/elevenlabs/leo_butch_listen_only_ElevenLabs_AudioIsolation_A40_f_rustle_rvb [2025-10-14 164504].mp3',
@@ -113,11 +104,20 @@ const ELEVENLABS_ROWS = [
         competitorLabel: 'ElevenLabs'
     },
     {
-        text: 'Studio misuse (A60)',
+        text: 'Studio misuse',
         files: [
             '/elevenlabs/original/leo_butch_listen_only_mix_A60_m_studio_wrong_use_1 [2025-10-14 164558].mp3',
             '/elevenlabs/elevenlabs/leo_butch_listen_only_ElevenLabs_AudioIsolation_A60_m_studio_wrong_use_1 [2025-10-14 164558].mp3',
             '/elevenlabs/ai-coustics/leo_butch_listen_only_LARK_2_A60_m_studio_wrong_use_1 [2025-10-14 164558].mp3',
+        ],
+        competitorLabel: 'ElevenLabs'
+    },
+    {
+        text: 'White noise hallucinations',
+        files: [
+            '/elevenlabs/original/listen_only_mix_white_noise [2025-10-14 164402].mp3',
+            '/elevenlabs/elevenlabs/listen_only_ElevenLabs_AudioIsolation_white_noise [2025-10-14 164402].mp3',
+            '/elevenlabs/ai-coustics/listen_only_LARK_2_white_noise [2025-10-14 164402].mp3',
         ],
         competitorLabel: 'ElevenLabs'
     },
@@ -152,7 +152,7 @@ function WavePlayer({ src, label }) {
                         labels: false,
                         height: 128,
                         frequencyMax: 16000,
-                        scale: 'mel',
+                        scale: 'linear',
                     }),
                 ],
             });
@@ -206,6 +206,28 @@ function Row({ text, files, competitorLabel }) {
 export default function Home() {
     const [activeTab, setActiveTab] = useState('eleven');
     const rows = activeTab === 'dolby' ? DOLBY_ROWS : ELEVENLABS_ROWS;
+
+    // Initialize active tab from hash (/#eleven or /#dolby) and keep in sync
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const applyHash = () => {
+            const hash = (window.location.hash || '').replace('#', '');
+            if (hash === 'dolby' || hash === 'eleven') {
+                setActiveTab(hash);
+            }
+        };
+        applyHash();
+        window.addEventListener('hashchange', applyHash);
+        return () => window.removeEventListener('hashchange', applyHash);
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const hash = (window.location.hash || '').replace('#', '');
+        if (hash !== activeTab) {
+            history.replaceState(null, '', `#${activeTab}`);
+        }
+    }, [activeTab]);
 
     return (
         <div className="container">
